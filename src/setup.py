@@ -17,7 +17,11 @@
 # network where it is not subject to attack from the Internet at large.
 #
 #
-import os, pwd, shutil, subprocess
+import os, pwd, shutil, subprocess, stat
+
+# Grab the username from the owner of this script, since
+# we'll be running as root and don't want to use that as "thisUser"
+thisUser = pwd.getpwuid( os.stat(__file__).st_uid ).pw_name
 
 # Run a shell command & return output, trimming off the newline
 def shellCmd(cmdLine):
@@ -30,12 +34,12 @@ def chown( path, user, group ):
     os.chown( path, pwd.getpwnam(user).pw_uid, pwd.getpwnam(group).pw_gid )
 
 def setupDir(path, user, group ):
-    if (! isDir(path)):
+    if (not isDir(path)):
         os.makedirs( path )
     os.chmod( path, 0755 ); # Set user/group to root
     chown( path, user, group )
 
-def copyFile( src, dest, user=None, group=None, mode=None )
+def copyFile( src, dest, user=None, group=None, mode=None ):
     shutil.copy( src, dest )
 
     if (user and group and mode):
@@ -44,8 +48,8 @@ def copyFile( src, dest, user=None, group=None, mode=None )
         os.chmod( dest, mode )
         chown( path, user, group )
 
-shellCmd( "usermod -G video www-data" ) # So www-data can access the camera
-shellCmd( "chmod a+rx /var/log/apache2" ) # Make the log files visible
-shellCmd( "chmod a+r /var/log/apache2/*" )
+#shellCmd( "usermod -G video www-data" ) # So www-data can access the camera
+#shellCmd( "chmod a+rx /var/log/apache2" ) # Make the log files visible
+#shellCmd( "chmod a+r /var/log/apache2/*" )
 
-setupDir( "/var/www/lapse", "thisUser", "root", 0755 )
+setupDir( "/var/www/lapse", thisUser, "root" )
