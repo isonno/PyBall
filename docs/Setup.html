@@ -1,0 +1,86 @@
+<h2>Hardware to buy</h2>
+<p>Almost all of the hardware for the Pyball is available off the shelf
+at <a href="http://www.adafruit.com/">Adafruit</a>.  Feel free to shop around though;
+these are generic items and you might find better prices at Amazon or
+one of the big-time suppliers like Mouser, Digi-Key, etc.</p>
+<p>Here's the list:</p>
+<ul>
+<li><strong>Raspberry Pi 2 Model B</strong><ul>
+<li>It's worth spending the extra $5-10 to get the upgraded Pi 2, Model B.  It has substantially more compute horsepower, which will come into play for analyzing the images on the fly or sending video.</li>
+</ul>
+</li>
+<li><strong>Raspberry Pi Camera</strong></li>
+<li><strong>USB WiFi</strong><ul>
+<li>If your mounting location has acccess to hard-wired Ethernet, this isn't necessary.  If your Pyball is mounted some distance from a WiFi station, getting a WiFi adapter with a long antenna makes a substantial improvement in the connection.</li>
+</ul>
+</li>
+<li><strong>5V 2A Micro-USB power supply.</strong><ul>
+<li>You'll want the 2A version to make sure the Pi has enough juice to run the 
+  peripherals (camera &amp; WiFi).  Adafruit specs the power supplys up a bit (5.1V) to account for power loss in the cord.  Not a bad idea.</li>
+</ul>
+</li>
+<li><strong>Case</strong><ul>
+<li>I used the <a href="https://www.adafruit.com/products/905">Adafruit weatherproof case</a>, but really, look at where you'll be mounting it.  If you can see what you want from an office window, you might not need a case at all.</li>
+</ul>
+</li>
+<li><strong>Camera mount</strong><ul>
+<li>I found the <a href="https://www.adafruit.com/product/1434">Pimoroni Camera Mount</a> useful for mounting the camera in the case.</li>
+</ul>
+</li>
+<li><strong>16G Micro-SD card</strong><ul>
+<li>These are available for cheap from <a href="http://www.amazon.com/SanDisk-Class-microSDHC-Flash-Memory/dp/B001F6YRNO">Amazon</a>.  You'll want at least 16G to have working space for your captured data.  Even 16G is still less than $10.</li>
+</ul>
+</li>
+</ul>
+<p>All tolled, the hardware runs about USD$100.</p>
+<h3>Software Setup</h3>
+<p>The Raspberry Pi comes without any software or boot media. <a href="https://www.raspberrypi.org/documentation/installation/installing-images/">Installing Raspbian</a> is just the first step of many for getting the system put together.  I installed Raspbian (vs. NOOBS) because I'm not experimenting with any other OS configuration.</p>
+<p>For the first Raspbian boot-up, plug the Pi into a screen and keyboard.  You'll be presented with a dialog to install various system components.  You'll want to add <code>ssh</code> support, for remote access, and definitely enable the camera drivers and configuration.</p>
+<p>My router requires the hardware MAC (media access control) address for authentication.  To get these, use the command:</p>
+<pre><code>$ ifconfig | grep HWaddr
+eth0      Link encap:Ethernet  HWaddr b8:27:eb:ea:7c:b9  
+wlan0     Link encap:Ethernet  HWaddr ac:a2:13:39:ce:f1  
+$ 
+</code></pre>
+
+<p>The hex numbers give the hardware addresses; <code>eth0</code> is the wired address and <code>wlan0</code> is for the WiFi.  <strong>Note:</strong>  I learned the hard way the Rasp Pi can't easily support two network connections.  If you're using WiFi, unplug the Ethernet cable, and vise-versa.</p>
+<p>You'll need to <a href="https://www.raspberrypi.org/documentation/linux/usage/users.md">set up new users</a>.  You should add whatever user you choose to the "sudoers" list, so the adminstrative command <code>sudo</code> is available:</p>
+<pre><code>$ sudo bash
+# cat &gt;&gt; /etc/sudoers
+eyeball ALL=(ALL) NOPASSWD: ALL
+^D
+</code></pre>
+
+<p>To make sure you're running the latest software:</p>
+<pre><code>$ sudo apt-get update
+$ sudo apt-get upgrade
+</code></pre>
+
+<p>To set your time zone (important for this project):</p>
+<pre><code>$ sudo cp /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+</code></pre>
+
+<p>(Substitute your favorite time-zone city for <code>Los_Angeles</code>, use <code>ls /usr/share/zoneinfo/*/*</code> to see the full list)</p>
+<p>To make sure enough USB power is available to drive the Wifi, add the line</p>
+<pre><code>max_usb_current=1
+</code></pre>
+
+<p>to the file <code>/boot/config.txt</code> and reboot the Pi.</p>
+<p>The camera fails if the user taking the picture isn't a member of the <code>video</code> group.  Fix this with</p>
+<pre><code>$ sudo usermod -G video &lt;username&gt;
+$ sudo usermod -G video www-data
+</code></pre>
+
+<p>The second line is to make sure the web server can access the video hardware.  <strong>Note:</strong> May need to do the second step <em>after</em> installing the apache2 web server; see below.</p>
+<p>Finally, I removed some software I had no use for (Scratch, a toy programming language &amp; Supercollider, an audio tool):</p>
+<pre><code>$ sudo apt-get remove scratch
+$ sudo apt-get remove supercollider
+$ sudo apt-get autoremove
+</code></pre>
+
+<h3>Hardware Setup</h3>
+<p>Because the RasPi &amp; camera are lightweight, really simple mounting methods (cardboard, foam tape, etc.) work fine.  For my setup, I mounted the camera on a <a href="https://www.adafruit.com/product/1434">plastic plate</a> specially designed for it, to avoid sticking things directly to camera's PC board.  This was easily taped to a thick piece of cardboard with a hole cut for the lens (the mounting screws helped secure it in place too).  The cardboard is press-fit into the clear lid of the case.</p>
+<p>The RasPi is secured to the back of the case with foam tape.  A hole is drilled for the power cord, sealed with duct tape to keep insects from taking up residence.  I mounted the Pyball above our garage door, threading the cord threw the corner of the door.  A simple piece of pressboard, mounted to the back of the case with screws holds up the case.  The pressboard was mounted underneath the eve of the roof with screws.</p>
+<p>When I originally set up the Pyball, I used a <a href="https://www.adafruit.com/products/1012">small WiFi</a> board.  At 75 feet from our WiFi access point, this worked, but just barely.  The access speed was like dial-up, and about 20% of packets got dropped.  Replacing the WiFi board with a <a href="https://www.adafruit.com/products/1030">longer antenna</a> improved the network access substantially.  A hole was drilled in the side of the case to let the new antenna poke out.</p>
+<p>I set up a power cord that I was able to tuck into a corner of the garage door without interferring with its operation.</p>
+<h3>Software</h3>
