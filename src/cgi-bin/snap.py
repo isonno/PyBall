@@ -7,7 +7,7 @@ import subprocess, datetime, socket
 
 hostname = socket.gethostname()
 webdir = "/var/www/"
-imgpath = webdir + "now.jpg"
+imgpath = webdir + "camimg/now.jpg"
 
 webphotocmd = "raspistill -w 1024 -h 768 -t 1 -o %s" % imgpath
 
@@ -21,7 +21,7 @@ resultPage = """<head><title>Current photo</title></head>
 <p>
 %s
 <p>
-<img src="http://%s/now.jpg">
+<img src="http://%s/camimg/now.jpg">
 <p>
 </body>""" % (datestr, hostname)
 
