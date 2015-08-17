@@ -9,7 +9,7 @@
 # This script does installs the various components for basic
 # PyBall operation.  It must be run via sudo:
 #
-#  sudo setup.py
+#  sudo ./setup.py
 #
 # NOTE: This script, and the scripts therin, have not be extensively
 # vetted for security issues.  They assume the Raspberry PI is dedicated
