@@ -17,7 +17,7 @@
 # network where it is not subject to attack from the Internet at large.
 #
 #
-import os, pwd, shutil, subprocess, stat
+import os, pwd, shutil, subprocess, stat, glob
 
 # Grab the username from the owner of this script, since
 # we'll be running as root and don't want to use that as "thisUser"
@@ -46,10 +46,40 @@ def copyFile( src, dest, user=None, group=None, mode=None ):
         if (os.path.isdir(dest)):
             dest += os.sep + os.path.basename(src)
         os.chmod( dest, mode )
-        chown( path, user, group )
+        chown( dest, user, group )
 
-#shellCmd( "usermod -G video www-data" ) # So www-data can access the camera
-#shellCmd( "chmod a+rx /var/log/apache2" ) # Make the log files visible
-#shellCmd( "chmod a+r /var/log/apache2/*" )
+# Set up apache / camera access
+shellCmd( "usermod -G video www-data" ) # So www-data can access the camera
+shellCmd( "chmod a+rx /var/log/apache2" ) # Make the log files visible
+shellCmd( "chmod a+r /var/log/apache2/*" )
 
+# set up www folder
 setupDir( "/var/www/lapse", thisUser, "root" )
+setupDir( "/var/www/camimg", "www-data", "root" )
+
+# Copy in CGI scripts
+for f in (glob.glob("cgi-bin/*.py")):
+    copyFile( f, "/usr/lib/cgi-bin/" + os.path.basename(f).split('.')[0],
+			  "root", "root", 0755 )
+
+# Copy web site
+for f in (glob.glob("www/*")):
+	copyFile( f, "/var/www/" + os.path.basename(f), "root", "root", 0644 )
+
+# Set up the crontab jobs
+cronPath = os.path.abspath(os.path.dirname(__file__)) + "/cronjobs/"
+
+# Make sure crontab scripts are executable
+for f in (glob.glob(cronPath + "*.py")):
+	os.chmod( f, 0751 )
+	
+# Create the chrontab file and install it
+cronFilePath = cronPath + "crontab.tmp"
+cronTabFile = file( cronFilePath, 'w' )
+cronTabFile.write( "# Crontab for pyball\n" )
+cronTabFile.write( "@reboot %stimelapse.py\n" % cronPath )
+cronTabFile.write( "00 23 * * * %supload_files.py\n" % cronPath )
+cronTabFile.close()
+
+shellCmd( "crontab -u %s %s" % (thisUser, cronFilePath) )
+
