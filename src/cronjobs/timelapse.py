@@ -1,4 +1,11 @@
 #!/usr/bin/python
+#
+# Script to snap photos throughout the day, from sunrise to sunset.
+#
+# Requires the astral module (pip install astral) for sunrise/sunset
+# calculations.
+#
+
 import os, time, datetime, sys, subprocess
 from astral import Astral
 
