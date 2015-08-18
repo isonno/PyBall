@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
-# Upload the day's harvest of JPG files to attic
-# for safe keeping and rapid access
+# Upload the day's harvest of JPG files to a remote host
+# for safe keeping and rapid access.  Requires shell definitions
+# for the host, username and password to upload the files to.
+# UPLOADHOST, UPLOADUSERNAME and UPLOADPASSWORD, respectively.
 
 import ftplib, os, glob, datetime, sys
 
@@ -26,4 +28,6 @@ if (len(sys.argv) == 2):
 
 os.chdir(localFiles)
 photoList = glob.glob(localFiles + todayStr + *.jpg)
-SendFiles( "attic", "eyeball", "seemenow", photoList, remFolder )
+SendFiles( os.getenv("UPLOADHOST"), 
+           os.getenv("UPLOADUSERNAME"), 
+           os.getenv("UPLOADPASSWORD"), photoList, remFolder )
