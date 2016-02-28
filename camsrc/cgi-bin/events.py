@@ -38,11 +38,14 @@ eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {day}-{month}, {hour1
 
 for f in allfiles[:60]:
     fileType = {'mp4':"Video", 'jpg':"Image"}[f[-3:]]
+    # Ugh - should use datetime formatting.
     monthNum = int(f[4:6])-1
     monthName = "JanFebMarAprMayJunJulAugSepOctNovDec"[monthNum*3:monthNum*3+3]
     hour = int(f[23:25])
-    ampm = "AM" if (hour < 12) else "PM"
-    hour -= 12
+    ampm = "AM"
+    if (hour > 12):
+        hour -= 12
+        ampm = "PM"
     hour = 12 if (hour == 0) else hour
     eventLine = eventFormat.format(type=fileType, thisAddr=thisIP,
                                    path="window/"+f, day=f[6:8], 
