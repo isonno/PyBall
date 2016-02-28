@@ -15,6 +15,7 @@ def SendEmail( toAddr, body ):
 	msg = "To: %s\r\nFrom: %s\r\nSubject: %s\r\n\r\n%s\n" % (toAddr, fromAddr, subject, body)
 
 	try:
+		# NOTE: You need to supply your actual SMTP server here.
 		server = smtplib.SMTP('mail.example.com', 587)
 		server.sendmail(fromAddr, toAddr, msg)
 		server.quit()
