@@ -34,23 +34,15 @@ resultPage = """<head><title>Captured events</title></head>
 <H1>Captured Events</H1>
 """
 
-eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {day}-{month}, {hour12:02d}:{min}:{sec} {AMPM}</a><br>\n'
+eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {datestring}</a><br>\n'
 
 for f in allfiles[:60]:
     fileType = {'mp4':"Video", 'jpg':"Image"}[f[-3:]]
     # Ugh - should use datetime formatting.
-    monthNum = int(f[4:6])-1
-    monthName = "JanFebMarAprMayJunJulAugSepOctNovDec"[monthNum*3:monthNum*3+3]
-    hour = int(f[23:25])
-    ampm = "AM"
-    if (hour > 12):
-        hour -= 12
-        ampm = "PM"
-    hour = 12 if (hour == 0) else hour
+    date = datetime.datetime.strptime(f[14:-4], "%Y%m%d_%H%M%S")
+    datestr = date.strftime("%d-%b, %I:%M:%S %p")
     eventLine = eventFormat.format(type=fileType, thisAddr=thisIP,
-                                   path="window/"+f, day=f[6:8], 
-                                   month=monthName, hour12=hour, AMPM=ampm,
-                                   min=f[25:27], sec=f[27:29] )
+                                   path="window/"+f, datestring=datestr )
     resultPage += eventLine
 
 print "Content-Type: text/html"
