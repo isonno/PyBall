@@ -15,6 +15,7 @@ thisIP = socket.getaddrinfo(socket.gethostname(), 80, socket.AF_INET)[0][4][0]
 
 webdir = "/var/www/window"
 
+maxEvents = 90
 os.chdir(webdir)
 
 # Stupid camera makes folders for date AND hour.
@@ -34,15 +35,30 @@ resultPage = """<head><title>Captured events</title></head>
 <H1>Captured Events</H1>
 """
 
-eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {datestring}</a><br>\n'
+dateFormat = '<b>---{datestring}---</b><br>\n'
+## eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {timestring}</a><br>\n'
+eventFormat = ' {timestring}: <a href="http://{thisAddr}/{video}">Video</a> <a href="http://{thisAddr}/{image}">Image</a></br>\n'
 
-for f in allfiles[:60]:
+curdate = datetime.date.today()
+resultPage += "<b>---Today---</b><br>\n"
+
+for f in allfiles[:maxEvents]:
     fileType = {'mp4':"Video", 'jpg':"Image"}[f[-3:]]
-    # Ugh - should use datetime formatting.
-    date = datetime.datetime.strptime(f[14:-4], "%Y%m%d_%H%M%S")
-    datestr = date.strftime("%d-%b, %I:%M:%S %p")
-    eventLine = eventFormat.format(type=fileType, thisAddr=thisIP,
-                                   path="window/"+f, datestring=datestr )
+    timestamp = datetime.datetime.strptime(f[14:-4], "%Y%m%d_%H%M%S")
+
+    if (timestamp.date() != curdate):
+        datestr = timestamp.strftime("%d-%b")
+        resultPage += dateFormat.format(datestring=datestr)
+        curdate = timestamp.date()
+
+    # The last image before the video corresponds to the video
+    if (fileType == "Image"):
+        lastImage = f
+        continue
+
+    timestr = timestamp.strftime("%I:%M:%S %p")
+    eventLine = eventFormat.format(timestring=timestr, thisAddr=thisIP, video="window/"+f,
+                                   image="window/"+lastImage)
     resultPage += eventLine
 
 print "Content-Type: text/html"
