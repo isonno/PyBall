@@ -36,6 +36,6 @@ if (len(sys.argv) < 2) or not (re.match("^[\w.-]+@\w+[.]\w+$", sys.argv[1])):
     print "Must supply an email address"
     sys.exit(1)
 
-if not EnoughDiskSpace("/var/www/lapse"):
-    SendEmail(sys.argv[1], "Eyeball is running out of disk space!")
+if not EnoughDiskSpace("/var/www/"):
+    SendEmail(sys.argv[1], "Host %s is running out of disk space!" % socket.gethostname())
 
