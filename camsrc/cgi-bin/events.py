@@ -41,6 +41,7 @@ eventFormat = ' {timestring}: <a href="http://{thisAddr}/{video}">Video</a> <a h
 
 curdate = datetime.date.today()
 resultPage += "<b>---Today---</b><br>\n"
+lastImage = ""
 
 for f in allfiles[:maxEvents]:
     fileType = {'mp4':"Video", 'jpg':"Image"}[f[-3:]]
