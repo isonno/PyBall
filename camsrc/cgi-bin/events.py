@@ -15,7 +15,7 @@ thisIP = socket.getaddrinfo(socket.gethostname(), 80, socket.AF_INET)[0][4][0]
 
 webdir = "/var/www/window"
 
-maxEvents = 90
+maxEvents = 120
 os.chdir(webdir)
 
 # Stupid camera makes folders for date AND hour.
@@ -34,10 +34,10 @@ resultPage = "<body>\n"
 
 dateFormat = '<div class="date">---{datestring}---</div>\n'
 ## eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {timestring}</a><br>\n'
-eventFormat = '<a href="http://{thisAddr}/{video}"><div class="thumbox"> <img src="http://{thisAddr}/{image}" width="200" height="150">{timestring}</div></a>\n'
+eventFormat = '<a href="http://{thisAddr}/{video}"><div class="thumbox"> <img src="http://{thisAddr}/{image}" width="200" height="150"><br>{timestring}</div></a>\n'
 
 curdate = datetime.date.today()
-resultPage += "<b>---Today---</b><br>\n"
+resultPage += dateFormat.format(datestring="Today")
 lastImage = ""
 
 for f in allfiles[:maxEvents]:
@@ -62,7 +62,7 @@ for f in allfiles[:maxEvents]:
 print "Content-Type: text/html"
 print
 print "<head>"
-print '  <link href="eventfmt.css" rel="stylesheet" type="text/css">'
+print '  <link href="../eventfmt.css" rel="stylesheet" type="text/css">'
 print '  <title>Recorded camera events</title>'
 print '</head>'
 print resultPage
