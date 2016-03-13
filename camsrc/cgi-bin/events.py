@@ -30,14 +30,11 @@ def sortfun(a,b):
 
 allfiles.sort(sortfun)  # Most recent first
 
-resultPage = """<head><title>Captured events</title></head>
-<body>
-<H1>Captured Events</H1>
-"""
+resultPage = "<body>\n"
 
-dateFormat = '<b>---{datestring}---</b><br>\n'
+dateFormat = '<div class="date">---{datestring}---</div>\n'
 ## eventFormat = ' <a href="http://{thisAddr}/{path}">{type}: {timestring}</a><br>\n'
-eventFormat = ' {timestring}: <a href="http://{thisAddr}/{video}">Video</a> <a href="http://{thisAddr}/{image}">Image</a></br>\n'
+eventFormat = '<a href="http://{thisAddr}/{video}"><div class="thumbox"> <img src="http://{thisAddr}/{image}" width="200" height="150">{timestring}</div></a>\n'
 
 curdate = datetime.date.today()
 resultPage += "<b>---Today---</b><br>\n"
@@ -64,5 +61,9 @@ for f in allfiles[:maxEvents]:
 
 print "Content-Type: text/html"
 print
+print "<head>"
+print '  <link href="eventfmt.css" rel="stylesheet" type="text/css">'
+print '  <title>Recorded camera events</title>'
+print '</head>'
 print resultPage
 print "</body>"
