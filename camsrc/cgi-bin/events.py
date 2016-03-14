@@ -23,10 +23,14 @@ allfiles = glob.glob("*/*/*")
 
 # Filenames are of the form:
 # YYYYMMDD/HH/v_YYYYMMDD_HHMMSS.mp4  (video)
+# YYYYMMDD/HH/v_YYYYMMDD_HHMMSSD.mp4 (video)  ('D' indicates daylight savings)
 # YYYYMMDD/HH/i_YYYYMMDD_HHMMSS.jpg  (image)
 
+ts0 = 14
+ts1 = 29
+
 def sortfun(a,b):
-    return 1 if a[-19:] < b[-19:] else -1
+    return 1 if a[ts0:ts1] < b[ts0:ts1] else -1
 
 allfiles.sort(sortfun)  # Most recent first
 
@@ -42,7 +46,7 @@ lastImage = ""
 
 for f in allfiles[:maxEvents]:
     fileType = {'mp4':"Video", 'jpg':"Image"}[f[-3:]]
-    timestamp = datetime.datetime.strptime(f[14:-4], "%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.strptime(f[ts0:ts1], "%Y%m%d_%H%M%S")
 
     if (timestamp.date() != curdate):
         datestr = timestamp.strftime("%d-%b")
