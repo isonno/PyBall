@@ -74,6 +74,8 @@ for f in allfiles[:maxEvents]:
                                    image="window/"+lastImage)
     resultPage += eventLine
 
+# Generate the web page back to the client browser.
+
 print "Content-Type: text/html"
 print
 print "<head>"
