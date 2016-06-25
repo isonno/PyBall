@@ -74,12 +74,13 @@ for f in (glob.glob(cronPath + "*.py")):
 	os.chmod( f, 0751 )
 	
 # Create the chrontab file and install it
-cronFilePath = cronPath + "crontab.tmp"
-cronTabFile = file( cronFilePath, 'w' )
-cronTabFile.write( "# Crontab for pyball\n" )
-cronTabFile.write( "@reboot %stimelapse.py\n" % cronPath )
-cronTabFile.write( "00 23 * * * %supload_files.py\n" % cronPath )
-cronTabFile.close()
+if False:
+	cronFilePath = cronPath + "crontab.tmp"
+	cronTabFile = file( cronFilePath, 'w' )
+	cronTabFile.write( "# Crontab for pyball\n" )
+	cronTabFile.write( "@reboot %stimelapse.py\n" % cronPath )
+	cronTabFile.write( "00 23 * * * %supload_files.py\n" % cronPath )
+	cronTabFile.close()
 
-shellCmd( "crontab -u %s %s" % (thisUser, cronFilePath) )
+	shellCmd( "crontab -u %s %s" % (thisUser, cronFilePath) )
 
