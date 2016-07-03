@@ -15,13 +15,28 @@ os.chdir(webdir)
 allPhotos = glob.glob("*.jpg")
 allPhotos.sort()
 
-# urlparse.parse_qs("date-start=20-3-22;date-end=5-29-33")
+# urlparse.parse_qs("date-start=16-03-19;date-end=16-03-20")
 # datetime.datetime.strptime("16-05-22", "%y-%m-%d")
 queryDict = urlparse.parse_qs( os.getenv("QUERY_STRING") )
 # By default, the query dict allows multiple values per key.  Flatten this
 for k in queryDict.keys():
     if (len(queryDict[k]) == 1):
         queryDict[k] = queryDict[k][0]
+
+def photoDate(s):
+    return datetime.datetime.strptime(s, "%y-%m-%d_%H-%M-%S.jpg")
+
+def queryDate(s):
+    return datetime.datetime.strptime(s, "%y-%m-%d")
+
+startDate = queryDate(queryDict['date-start'])
+endDate = queryDate(queryDict['date-end']) + datetime.timedelta(1) # Include last day
+
+def insideDate(s):
+    picDate = photoDate(s)
+    return picDate >= startDate and picDate < endDate
+
+selPhotos = [s for s in allPhotos if insideDate(s)]
 
 def sendSimplePage(photoIndex):
 	prevPhoto = max(photoIndex-1, 0)
