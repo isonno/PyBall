@@ -48,6 +48,11 @@ def copyFile( src, dest, user=None, group=None, mode=None ):
         os.chmod( dest, mode )
         chown( dest, user, group )
 
+def copyFiles( wildcard, destFolder ):
+	for f in (glob.glob( wildcard )):
+		print "copy %s to %s" % (f, destFolder + os.path.basename(f))
+		copyFile( f, destFolder + os.path.basename(f), "root", "root", 0644 )
+
 # Set up apache / camera access
 shellCmd( "usermod -G video www-data" ) # So www-data can access the camera
 shellCmd( "chmod a+rx /var/log/apache2" ) # Make the log files visible
@@ -56,6 +61,7 @@ shellCmd( "chmod a+r /var/log/apache2/*" )
 # set up www folder
 setupDir( "/var/www/lapse", thisUser, "root" )
 setupDir( "/var/www/camimg", "www-data", "root" )
+setupDir( "/var/www/js", "www-data", "root" )
 
 # Copy in CGI scripts
 for f in (glob.glob("cgi-bin/*.py")):
@@ -63,8 +69,8 @@ for f in (glob.glob("cgi-bin/*.py")):
 			  "root", "root", 0755 )
 
 # Copy web site
-for f in (glob.glob("www/*")):
-	copyFile( f, "/var/www/" + os.path.basename(f), "root", "root", 0644 )
+copyFiles( "www/*.html", "/var/www/" )
+copyFiles( "www/js/*.js", "/var/www/js/" )
 
 # Set up the crontab jobs
 cronPath = os.path.abspath(os.path.dirname(__file__)) + "/cronjobs/"
