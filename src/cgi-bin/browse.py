@@ -31,7 +31,7 @@ def strDate(s):
 
 def dumpWithinDates():
     startDate = strDate(queryDict['date-start'] if queryDict.has_key('date-start') else allPhotos[0] )
-    endDate = strDate(queryDict['date-end'] if queryDict.has_key('date-end') else allPhotos[-1:]) 
+    endDate = strDate(queryDict['date-end'] if queryDict.has_key('date-end') else allPhotos[-1]) 
     endDate = endDate + datetime.timedelta(1) # Include last day
 
     def insideDate(s):
