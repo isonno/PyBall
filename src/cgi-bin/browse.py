@@ -30,8 +30,16 @@ def strDate(s):
     return datetime.datetime.strptime(s[:8], "%y-%m-%d")
 
 def dumpWithinDates():
-    startDate = strDate(queryDict['date-start'] if queryDict.has_key('date-start') else allPhotos[0] )
-    endDate = strDate(queryDict['date-end'] if queryDict.has_key('date-end') else allPhotos[-1]) 
+    startDate = strDate(allPhotos[0])
+    endDate = strDate(allPhotos[-1])
+    
+    if queryDict.has_key('date'):
+        startDate = strDate(queryDict['date'])
+        endDate = startDate
+    if queryDict.has_key('date-start'):
+        startDate = strDate(queryDict['date-start'])
+    if queryDict.has_key('date-end'):
+        endDate = strDate(queryDict['date-end'])
     endDate = endDate + datetime.timedelta(1) # Include last day
 
     def insideDate(s):

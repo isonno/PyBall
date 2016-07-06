@@ -13,9 +13,25 @@ function ProgressIndicator( title, maxStep )
     $("#progressLabel").text(title);
 }
 
-ProgressIndicator.prototype.stepProgress = function()
+ProgressIndicator.stepProgress = function()
 {
     $("#progress").val($("#progress").val() + 1);
     if ($("#progress").val() == $("#progress").attr("max")) // String to number compare
         $("#progressLabel").text("");
 };
+
+ProgressIndicator.prototype.stepProgress = ProgressIndicator.stepProgress;
+
+// Use this to make it full screen
+ProgressIndicator.setToWindowWidth =function()
+{
+    var progMargin = 20;
+    $("#progress").width( window.innerWidth - progMargin * 2)
+};
+
+ProgressIndicator.trackWindowWidth = function()
+{
+//    window.onresize = ProgressIndicator.setToWindowWidth;
+    ProgressIndicator.setToWindowWidth();
+};
+
